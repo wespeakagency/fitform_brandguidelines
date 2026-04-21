@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitform | Digital Brandbook</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              fitform: {
+                bone: '#F5F2EE',
+                stone: '#D1CDC7',
+                greige: '#BDB7AF',
+                navy: '#1A2232',
+                teal: '#244D4D',
+                shadow: '#2C3E50',
+                obsidian: '#0B0F15',
+                charcoal: '#262626',
+                slate: '#2F353B',
+              }
+            },
+            letterSpacing: {
+              'widest-plus': '0.2em',
+            },
+            animation: {
+              'blob': 'blob 10s infinite',
+            },
+            keyframes: {
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Global Styles for Scrollbar & Glass Effects -->
+    <style>
+      html {
+        scroll-behavior: smooth;
+        background-color: #0B0F15;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1A2232;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #244D4D;
+        border-radius: 4px;
+      }
+      
+      /* Liquid Glass Aesthetics */
+      .glass-panel {
+        background: rgba(26, 34, 50, 0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      }
+      .glass-panel-heavy {
+        background: rgba(11, 15, 21, 0.7);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+      }
+    </style>
+
+    <!-- Import Map for React & Libraries -->
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.300.0?deps=react@18.2.0",
+    "framer-motion": "https://esm.sh/framer-motion@10.16.16?deps=react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+
+    <!-- Babel for in-browser TSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="react,typescript" data-type="module">
+      import React, { useState, useEffect } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { motion, useScroll, useTransform, useMotionValue, AnimatePresence } from 'framer-motion';
+      import { 
+        Menu, X, ArrowUp, Star, Zap, Sparkles, Check, Copy, Droplets, MonitorPlay, Grid, Ruler, PenTool, LayoutTemplate, Box, ArrowDown, ZoomIn 
+      } from 'lucide-react';
+
+      // --- TYPES ---
+      // Converted to const object to avoid ReferenceError in babel-standalone
+      const NavigationSection = {
+        Cover: 'cover',
+        Heart: 'heart', 
+        Verbal: 'verbal',
+        Visual: 'visual', 
+        Applications: 'applications' 
+      };
+
+      // Removed 'export' keywords to ensure scope is handled correctly within this single file
+
+      // --- CONSTANTS ---
+      const BRAND_NAME = "FITFORM";
+      const LOGO_URL = "https://github.com/ryandoelsol/fitform/blob/Imagenes/FITFORMLOGO.png?raw=true";
+      const BRAND_VIDEO_URL = "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformanimado.mp4?raw=true";
+
+      const IMPLEMENTATION_IMAGES = [
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion01.png?raw=true",
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion02.png?raw=true",
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion03.png?raw=true",
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion04.png?raw=true",
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion05.png?raw=true",
+        "https://github.com/ryandoelsol/fitform/blob/Imagenes/fitformimplementacion06.png?raw=true",
+      ];
+
+      const NAV_ITEMS = [
+        { id: NavigationSection.Heart, label: "1. El Corazón" },
+        { id: NavigationSection.Verbal, label: "2. Narrativa" },
+        { id: NavigationSection.Visual, label: "3. Branding" },
+        { id: NavigationSection.Applications, label: "4. Aplicaciones" },
+      ];
+
+      const COLOR_SYSTEM = [
+        {
+          title: "Paleta Primaria",
+          role: "La Identidad Central",
+          description: "Equilibrio entre la elegancia del estudio y la intensidad del entrenamiento.",
+          colors: [
+            { name: "Fitform Navy", hex: "#1A2232", rgb: "26, 34, 50", cmyk: "87, 75, 54, 63", pantone: "PMS 539 C" },
+            { name: "Sculpt Teal", hex: "#244D4D", rgb: "36, 77, 77", cmyk: "82, 45, 58, 43", pantone: "PMS 5473 C" },
+            { name: "Warm Bone", hex: "#F5F2EE", rgb: "245, 242, 238", cmyk: "3, 3, 6, 0", pantone: "Warm Gray 1 C" },
+          ]
+        },
+        {
+          title: "Secundarios y Acentos",
+          role: "Soporte Técnico",
+          description: "Tonos para jerarquía visual, fondos y detalles arquitectónicos.",
+          colors: [
+            { name: "Stone", hex: "#D1CDC7", rgb: "209, 205, 199", cmyk: "18, 14, 17, 0" },
+            { name: "Obsidian", hex: "#121212", rgb: "18, 18, 18", cmyk: "75, 68, 67, 90" },
+            { name: "Soft Greige", hex: "#BDB7AF", rgb: "189, 183, 175", cmyk: "26, 21, 27, 0" },
+          ]
+        }
+      ];
+
+      const PURPOSE = {
+        title: "Propósito",
+        text: "Elevamos el estándar del Pilates fusionando la intensidad del entrenamiento de fuerza con una experiencia sensorial inmersiva. No venimos solo a entrenar el cuerpo; venimos a desafiar la mente, esculpir la figura y desconectar del ruido exterior para reconectar con la fuerza interior.",
+        quote: "“Llevar el ejercicio al siguiente nivel de consciencia, estética y resultado.”"
+      };
+
+      const PERSONALITY_TRAITS = [
+        {
+          title: "Magnética y Actual",
+          description: "Generamos atracción. Somos el lugar donde la gente quiere ser vista, somos el ejercicio que define un estilo de vida.",
+          icon: Star
+        },
+        {
+          title: "Determinada y Poderosa",
+          description: "No somos suaves. Somos Strong Pilates. Exigimos esfuerzo y disciplina porque sabemos que el método funciona.",
+          icon: Zap
+        },
+        {
+          title: "Sensorial y Envolvente",
+          description: "No somos un gimnasio frío. Somos una experiencia de luces, ritmo y proyección. El ambiente perfecto para enfocarte en ti.",
+          icon: Sparkles
+        }
+      ];
+
+      const IS_VS_IS_NOT = [
+        { isNot: "No es rehabilitación ni terapia física.", is: "Es entrenamiento de fuerza y resistencia." },
+        { isNot: "No es un estudio de Pilates 'relajante'.", is: "Es un método de transformación integral." },
+        { isNot: "No es un gimnasio masivo y anónimo.", is: "Es un estudio personalizado y atento." },
+        { isNot: "No es una franquicia rígida.", is: "Es un método propio con identidad única." },
+        { isNot: "No es una tendencia vacía.", is: "Son resultados visibles basados en esfuerzo." },
+      ];
+
+      const PILLARS = [
+        {
+          title: "The Method",
+          subtitle: "El Entrenamiento",
+          description: "La técnica. Strong Pilates, bajo impacto, alta intensidad. Cama híbrida y zona aeróbica.",
+          keywords: ["Strong Pilates", "Core", "Resistencia", "Esculpir"]
+        },
+        {
+          title: "The Experience",
+          subtitle: "El Ritual Sensorial",
+          description: "La atmósfera. Oscuridad, proyecciones, música curada y mindfulness. Un 'detox' mental.",
+          keywords: ["Inmersivo", "Mindful", "Atmósfera", "Desconexión"]
+        },
+        {
+          title: "The Lifestyle",
+          subtitle: "Estatus & Comunidad",
+          description: "El mundo FitForm. Exclusividad, mujer empoderada, fashion y fit. El 'after-class'.",
+          keywords: ["Community", "Exclusive", "Fashion-forward"]
+        },
+        {
+          title: "The Connection",
+          subtitle: "Cuerpo & Mente",
+          description: "Bienestar integral. Sentirse fuerte desde adentro. La meditación al final de la clase.",
+          keywords: ["Balance", "Inner Strength", "Focus", "Breath"]
+        }
+      ];
+
+      const MANIFESTO_TEXT = [
+        "No venimos aquí a pasar el rato.",
+        "Venimos a transformarnos.",
+        "FitForm no es el Pilates que conocías.",
+        "Es la evolución.",
+        "Donde la delicadeza se encuentra con la resistencia.",
+        "Aquí, el lujo no es solo el espacio;",
+        "es el tiempo que te dedicas.",
+        "Welcome to Strong Pilates."
+      ];
+
+      const TONE_VOICE = [
+        {
+          trait: "Somos Directos (Determinada)",
+          why: "El método es intenso y eficiente. No hay rodeos.",
+          how: "Frases cortas. Verbos de acción. Sin 'relleno'.",
+          dontSay: "Nos gustaría invitarte a que pruebes una clase...",
+          say: "Tu cama está lista. Ven a probar de qué eres capaz."
+        },
+        {
+          trait: "Somos Estéticos (Magnético)",
+          why: "Somos Lifestyle. Lenguaje elegante como el estudio.",
+          how: "Minimalista. Editorial. Spanglish natural ('Strong', 'Burn').",
+          dontSay: "Hacemos ejercicio muy fuerte para que te pongas en forma.",
+          say: "High intensity. Low impact. Resultados que se ven y se sienten."
+        },
+        {
+          trait: "Somos Evocativos (Sensorial)",
+          why: "Vendemos una experiencia inmersiva.",
+          how: "Profundo. Pausado. Palabras que describen sensaciones.",
+          dontSay: "Ahora relájate y respira porque ya acabó la clase.",
+          say: "Desconéctate del ruido exterior."
+        }
+      ];
+
+      const KEY_MESSAGES = [
+        "Strong Pilates. Strong Mind.",
+        "Not your average Pilates.",
+        "Low impact. High intensity. Real results.",
+        "Donde la fuerza encuentra su forma.",
+        "50 minutos para ti. 100% intensidad.",
+        "Disconnect to reconnect."
+      ];
+
+      // --- COMPONENTS ---
+
+      const Reveal = ({ children, delay = 0, width = "auto", className = "", yOffset = 50 }) => {
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: yOffset }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay }}
+            style={{ width: width === "full" ? "100%" : "auto" }}
+            className={className}
+          >
+            {children}
+          </motion.div>
+        );
+      };
+
+      const CustomCursor = () => {
+        const mouseX = useMotionValue(0);
+        const mouseY = useMotionValue(0);
+
+        useEffect(() => {
+          const moveCursor = (e) => {
+            mouseX.set(e.clientX - 16);
+            mouseY.set(e.clientY - 16);
+          };
+          window.addEventListener("mousemove", moveCursor);
+          return () => window.removeEventListener("mousemove", moveCursor);
+        }, [mouseX, mouseY]);
+
+        return (
+          <motion.div
+            className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-white/50 pointer-events-none z-[100] hidden md:block mix-blend-overlay backdrop-blur-sm"
+            style={{ x: mouseX, y: mouseY }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 28 }}
+          >
+            <div className="w-1.5 h-1.5 bg-white rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+          </motion.div>
+        );
+      };
+
+      const NoiseOverlay = () => (
+        <div className="fixed inset-0 z-[90] pointer-events-none opacity-[0.05] mix-blend-overlay">
+          <svg width="100%" height="100%">
+            <filter id="noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="4" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noise)" />
+          </svg>
+        </div>
+      );
+
+      const SectionHeader = ({ number, title, subtitle, light = false }) => (
+        <Reveal>
+          <div className={`mb-20 md:mb-32 flex flex-col gap-6 text-white`}>
+             <div className="flex items-center gap-4">
+                   <div className="h-[1px] w-12 bg-fitform-teal"></div>
+                   <span className="font-mono text-sm uppercase tracking-[0.2em] text-fitform-teal">0{number}</span>
+              </div>
+            <div className="flex flex-col md:flex-row gap-8 md:items-end justify-between">
+              <h2 className="font-display font-bold text-5xl md:text-7xl uppercase tracking-tight leading-[0.9] text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.15)] max-w-4xl">
+                  {title}
+              </h2>
+              {subtitle && (
+                  <div className="md:max-w-xs lg:max-w-md pb-2 border-l border-white/10 pl-6">
+                      <p className="font-sans text-sm md:text-base leading-relaxed text-gray-300">{subtitle}</p>
+                  </div>
+              )}
+            </div>
+          </div>
+        </Reveal>
+      );
+
+      const ColorCard = ({ color }) => {
+        const [copied, setCopied] = useState(false);
+
+        const handleCopy = () => {
+          navigator.clipboard.writeText(color.hex);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        };
+
+        return (
+          <motion.div
+            whileHover={{ y: -5, scale: 1.02 }}
+            className="glass-panel group flex flex-col cursor-pointer overflow-hidden rounded-3xl transition-all duration-500 hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)] hover:border-white/20"
+            onClick={handleCopy}
+          >
+            <div 
+              className="h-40 w-full transition-all duration-500 relative flex items-center justify-center overflow-hidden" 
+            >
+              <div className="absolute inset-0 opacity-80" style={{ backgroundColor: color.hex }}></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-50"></div>
+              
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+                  <span className={`text-[10px] font-bold uppercase tracking-[0.2em] text-white border border-white/30 px-4 py-2 rounded-full glass-panel`}>Copiar</span>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="flex justify-between items-baseline mb-6">
+                  <h4 className="font-display font-bold text-white tracking-widest text-sm uppercase">{color.name}</h4>
+                  {copied ? <Check size={14} className="text-fitform-teal" /> : <Copy size={14} className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />}
+              </div>
+              
+              <div className="space-y-3 font-mono text-[10px] uppercase text-gray-400 tracking-wider">
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span>HEX</span>
+                      <span className="text-white font-bold">{color.hex}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span>RGB</span>
+                      <span>{color.rgb}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span>CMYK</span>
+                      <span>{color.cmyk}</span>
+                  </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+      };
+
+      const PersonalityCard = ({ title, description, icon: Icon }) => {
+          return (
+            <motion.div 
+              whileHover={{ y: -10, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+              className="glass-panel p-10 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 border border-white/5 hover:border-white/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+            >
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-fitform-teal/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+              <div className="flex flex-col h-full justify-between gap-8 relative z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                       <Icon size={28} className="text-white group-hover:text-fitform-teal transition-colors duration-300" strokeWidth={1.5} />
+                  </div>
+                  
+                  <div>
+                      <h3 className="font-display font-bold text-2xl uppercase tracking-widest text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-400 transition-all duration-300">
+                          {title}
+                      </h3>
+                      <p className="font-sans text-gray-400 text-sm leading-relaxed group-hover:text-white transition-colors duration-300">
+                          {description}
+                      </p>
+                  </div>
+              </div>
+            </motion.div>
+          );
+      };
+
+      const DoDontCard = ({ type, title, visual }) => {
+          return (
+              <div className="flex flex-col gap-4 group">
+                  <div className={`glass-panel relative h-64 rounded-3xl overflow-hidden flex items-center justify-center p-8 transition-all duration-500 group-hover:scale-[1.02] border ${type === 'do' ? 'border-green-500/20' : 'border-red-500/20'}`}>
+                      {visual}
+                      <div className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border ${type === 'do' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                          {type === 'do' ? <Check size={18} /> : <X size={18} />}
+                      </div>
+                  </div>
+                  <div>
+                      <h4 className={`font-display font-bold uppercase tracking-widest text-xs text-center ${type === 'do' ? 'text-green-400' : 'text-red-400'}`}>{title}</h4>
+                  </div>
+              </div>
+          )
+      }
+
+      const ComparisonRow = ({ is, isNot }) => (
+        <div className="bg-[#13171F] p-6 md:p-8 rounded-3xl border border-white/5 hover:border-white/20 hover:bg-[#1A1E26] transition-all duration-300 group flex flex-col h-full justify-between relative overflow-hidden">
+          
+          {/* Negative Space - Top */}
+          <div className="flex gap-4 items-start mb-8 relative z-10">
+              <div className="w-8 h-8 rounded-full bg-red-500/5 flex items-center justify-center shrink-0 border border-red-500/10 text-red-400/60 group-hover:text-red-400 group-hover:border-red-500/30 transition-colors">
+                  <X size={14} />
+              </div>
+              <p className="text-gray-500 font-sans text-sm leading-relaxed mt-1 group-hover:text-gray-400 transition-colors">{isNot}</p>
+          </div>
+
+          {/* Connector (Optional visual aid) */}
+          <div className="absolute left-10 top-1/2 -translate-y-1/2 h-8 w-[1px] bg-gradient-to-b from-red-500/10 to-fitform-teal/30 opacity-30"></div>
+
+          {/* Positive Space - Bottom */}
+          <div className="flex gap-4 items-start relative z-10">
+              <div className="w-8 h-8 rounded-full bg-fitform-teal/10 flex items-center justify-center shrink-0 border border-fitform-teal/30 text-fitform-teal shadow-[0_0_15px_rgba(36,77,77,0.2)] group-hover:scale-110 transition-transform duration-300">
+                  <Check size={14} />
+              </div>
+              <p className="text-white font-display font-bold tracking-wide text-sm uppercase leading-relaxed mt-1 group-hover:text-fitform-teal/90 transition-colors">{is}</p>
+          </div>
+        </div>
+      );
+
+      const ImageGallery = ({ images }) => {
+          const [selectedImage, setSelectedImage] = useState(null);
+
+          return (
+              <>
+                  <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                      {images.map((img, idx) => (
+                          <motion.div 
+                              key={idx}
+                              layoutId={`img-${idx}`}
+                              className="glass-panel p-2 rounded-2xl group relative w-full overflow-hidden cursor-pointer grayscale-[0.5] hover:grayscale-0 transition-all duration-700 break-inside-avoid"
+                              onClick={() => setSelectedImage(img)}
+                          >
+                               <div className="rounded-xl overflow-hidden">
+                                  <img 
+                                      src={img} 
+                                      alt={`Implementation ${idx}`} 
+                                      className="w-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+                                  />
+                               </div>
+                               <div className="absolute inset-0 bg-fitform-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center rounded-2xl">
+                                   <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full text-white shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                                       <ZoomIn size={24} />
+                                   </div>
+                               </div>
+                          </motion.div>
+                      ))}
+                  </div>
+
+                  <AnimatePresence>
+                      {selectedImage && (
+                          <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-2xl flex items-center justify-center p-4 md:p-12"
+                              onClick={() => setSelectedImage(null)}
+                          >
+                              <motion.img 
+                                  src={selectedImage} 
+                                  className="max-h-[90vh] max-w-full rounded-2xl shadow-2xl border border-white/10"
+                                  onClick={(e) => e.stopPropagation()} 
+                                  initial={{ scale: 0.9, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                              />
+                              <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors bg-white/10 p-2 rounded-full backdrop-blur-md">
+                                  <X size={24} />
+                              </button>
+                          </motion.div>
+                      )}
+                  </AnimatePresence>
+              </>
+          )
+      }
+
+      // --- SECTIONS ---
+
+      const Hero = () => {
+        const { scrollY } = useScroll();
+        const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+        const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+        return (
+          <section id="pdf-slide-hero" className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-fitform-obsidian">
+            
+            <div className="absolute inset-0 z-0">
+               <video 
+                  src={BRAND_VIDEO_URL} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="w-full h-full object-cover opacity-70"
+               />
+               <div className="absolute inset-0 bg-fitform-obsidian/40 backdrop-blur-[2px]" />
+               <div className="absolute inset-0 bg-gradient-to-t from-fitform-obsidian via-transparent to-transparent" />
+            </div>
+
+            <motion.div 
+              style={{ y: y1, opacity }}
+              className="relative z-10 text-center px-6 w-full max-w-7xl mx-auto flex flex-col items-center justify-center h-full"
+            >
+              <div className="flex flex-col gap-8 items-center">
+                  <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8, duration: 1 }}
+                      className="flex items-center gap-4 glass-panel px-8 py-3 rounded-full border border-white/10"
+                  >
+                      <div className="w-2 h-2 rounded-full bg-fitform-teal animate-pulse shadow-[0_0_10px_#244D4D]" />
+                      <span className="font-display font-bold text-xs md:text-sm tracking-[0.4em] uppercase text-white">Brand Guidelines</span>
+                  </motion.div>
+
+                  <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.2, duration: 1 }}
+                      className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/40"
+                  >
+                      Ver. 3.0 • 2026
+                  </motion.p>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5, duration: 1 }}
+              className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/50 flex flex-col items-center gap-2"
+            >
+              <span className="text-[10px] uppercase tracking-widest">Scroll to Explore</span>
+              <motion.div 
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              >
+                  <ArrowDown size={16} />
+              </motion.div>
+            </motion.div>
+          </section>
+        );
+      };
+
+      const HeartSection = ({ id }) => {
+          return (
+              <section id={id} className="py-32 px-6 md:px-12 lg:px-24 relative overflow-hidden bg-[#0F1218]">
+                  <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-fitform-teal/20 rounded-full blur-[120px] -mr-40 -mt-40 animate-blob mix-blend-screen pointer-events-none z-0" />
+                  <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-fitform-navy/40 rounded-full blur-[100px] -ml-20 -mb-20 mix-blend-screen pointer-events-none z-0" />
+
+                  <div className="max-w-[1400px] mx-auto relative z-10">
+                      <div id="pdf-slide-heart-1" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl mb-12">
+                          <SectionHeader 
+                              number="1" 
+                              title="El Corazón" 
+                              subtitle="El propósito, la personalidad y los pilares que mueven a Fitform."
+                          />
+
+                          {/* Purpose Section - Full Width / Centered Feel */}
+                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
+                              <div className="lg:col-span-10 lg:col-start-1">
+                                  <Reveal>
+                                      <span className="text-fitform-teal font-mono font-bold uppercase tracking-widest text-xs mb-6 block drop-shadow-[0_0_10px_rgba(36,77,77,0.5)]">Nuestro Propósito</span>
+                                      <h3 className="font-display text-3xl md:text-5xl font-bold text-white uppercase leading-[1.1] mb-8 drop-shadow-lg max-w-4xl">
+                                          {PURPOSE.title}: <span className="text-transparent bg-clip-text bg-gradient-to-r from-fitform-teal to-white">Reconectar</span> con la fuerza interior.
+                                      </h3>
+                                      <p className="font-sans text-xl text-gray-400 leading-relaxed max-w-3xl">
+                                          {PURPOSE.text}
+                                      </p>
+                                      <div className="mt-12 pl-6 border-l-2 border-fitform-teal/50">
+                                          <p className="font-display font-medium text-2xl italic text-white/90">
+                                              {PURPOSE.quote}
+                                          </p>
+                                      </div>
+                                  </Reveal>
+                              </div>
+                          </div>
+
+                          {/* Brand Definition - Wide Grid Layout */}
+                          <Reveal delay={0.2} className="w-full">
+                              <div className="glass-panel-heavy p-8 md:p-12 rounded-[2.5rem] relative shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/5">
+                                  <div className="flex flex-col md:flex-row items-end justify-between mb-12 border-b border-white/10 pb-6 gap-6">
+                                      <div>
+                                          <h4 className="font-display font-bold text-2xl uppercase tracking-widest text-white mb-2">Brand Definition</h4>
+                                          <p className="font-sans text-sm text-gray-400">Lo que nos define y lo que nos diferencia.</p>
+                                      </div>
+                                      <span className="font-mono text-[10px] text-fitform-teal uppercase tracking-widest border border-fitform-teal/30 px-3 py-1 rounded-full">The Standard</span>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                      {IS_VS_IS_NOT.map((item, idx) => (
+                                          <ComparisonRow key={idx} is={item.is} isNot={item.isNot} />
+                                      ))}
+                                  </div>
+                              </div>
+                          </Reveal>
+                      </div>
+
+                      <div id="pdf-slide-heart-2" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <div className="mb-40">
+                              <div className="flex items-end justify-between mb-16 border-b border-white/10 pb-6">
+                                  <h3 className="font-display text-3xl font-bold uppercase tracking-widest text-white">Personalidad</h3>
+                                  <span className="font-mono text-xs text-gray-500 uppercase tracking-widest hidden md:block">Archetypes & Traits</span>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                  {PERSONALITY_TRAITS.map((trait, idx) => (
+                                      <Reveal key={idx} delay={idx * 0.1}>
+                                          <PersonalityCard {...trait} />
+                                      </Reveal>
+                                  ))}
+                              </div>
+                          </div>
+
+                          <div>
+                              <h3 className="font-display text-3xl font-bold uppercase tracking-widest text-white mb-16 text-center">Brand Pillars</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {PILLARS.map((pillar, idx) => (
+                                      <Reveal key={idx} delay={idx * 0.1} className="glass-panel p-12 md:p-16 group hover:bg-white/5 transition-colors duration-500 rounded-[2.5rem] border border-white/5">
+                                          <div className="flex justify-between items-start mb-6">
+                                              <span className="text-4xl font-display font-bold text-white/20 group-hover:text-fitform-teal transition-colors">0{idx + 1}</span>
+                                              <span className="text-xs font-mono uppercase tracking-widest text-white border border-white/20 rounded-full px-3 py-1">{pillar.subtitle}</span>
+                                          </div>
+                                          <h4 className="font-display font-bold text-2xl uppercase tracking-widest text-white mb-4">{pillar.title}</h4>
+                                          <p className="font-sans text-gray-400 mb-8 leading-relaxed">{pillar.description}</p>
+                                          <div className="flex flex-wrap gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                              {pillar.keywords.map((kw, kIdx) => (
+                                                  <span key={kIdx} className="text-[10px] uppercase font-bold text-fitform-teal tracking-widest">#{kw}</span>
+                                              ))}
+                                          </div>
+                                      </Reveal>
+                                  ))}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+          )
+      }
+
+      const VerbalSection = ({ id }) => {
+          return (
+              <section id={id} className="py-32 px-6 md:px-12 lg:px-24 bg-fitform-obsidian relative overflow-hidden">
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-to-r from-fitform-navy via-fitform-teal/20 to-fitform-navy rounded-full blur-[150px] opacity-40 pointer-events-none z-0" />
+
+                  <div className="max-w-[1400px] mx-auto relative z-10">
+                      <div id="pdf-slide-verbal-1" className="p-4 bg-fitform-obsidian">
+                          <SectionHeader 
+                              number="2" 
+                              title="Narrativa" 
+                              subtitle="Nuestra voz es nuestra firma. Autoridad sofisticada con mentalidad de atleta."
+                              light
+                          />
+
+                          <div className="min-h-[70vh] flex flex-col items-center justify-center text-center mb-40 relative">
+                               <Reveal>
+                                  <div className="glass-panel p-16 rounded-[4rem] max-w-6xl mx-auto shadow-2xl border border-white/5 relative overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+                                      <div className="space-y-6 relative z-10">
+                                          {MANIFESTO_TEXT.map((line, i) => (
+                                               <motion.p 
+                                                  key={i} 
+                                                  className={`font-display uppercase tracking-[0.1em] leading-tight transition-all duration-500 hover:text-fitform-teal cursor-default ${i === MANIFESTO_TEXT.length -1 ? 'text-4xl md:text-6xl text-white font-bold mt-12 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'text-xl md:text-3xl text-white/50 font-medium'}`}
+                                               >
+                                                  {line}
+                                               </motion.p>
+                                          ))}
+                                      </div>
+                                  </div>
+                               </Reveal>
+                          </div>
+                      </div>
+
+                      <div id="pdf-slide-verbal-2" className="p-4 bg-fitform-obsidian">
+                          <div className="mb-32">
+                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                  {TONE_VOICE.map((tone, idx) => (
+                                      <Reveal key={idx} delay={idx * 0.2} className="glass-panel p-10 md:p-14 hover:bg-white/5 transition-colors duration-500 rounded-[2.5rem]">
+                                          <div className="w-3 h-3 rounded-full bg-fitform-teal mb-6 shadow-[0_0_10px_#244D4D]" />
+                                          <h4 className="font-display font-bold text-xl uppercase tracking-widest text-white mb-8">{tone.trait}</h4>
+                                          <div className="space-y-6 mb-12">
+                                              <div>
+                                                  <span className="text-[10px] text-gray-500 uppercase tracking-widest block mb-2">Por qué</span>
+                                                  <p className="text-gray-300 text-sm leading-relaxed">{tone.why}</p>
+                                              </div>
+                                              <div>
+                                                  <span className="text-[10px] text-gray-500 uppercase tracking-widest block mb-2">Cómo suena</span>
+                                                  <p className="text-gray-300 text-sm leading-relaxed">{tone.how}</p>
+                                              </div>
+                                          </div>
+                                          <div className="pt-6 border-t border-white/10 space-y-4">
+                                              <div className="flex gap-4 items-baseline opacity-40">
+                                                  <X size={12} className="text-red-400 shrink-0" />
+                                                  <p className="text-xs italic font-serif text-white">"{tone.dontSay}"</p>
+                                              </div>
+                                              <div className="flex gap-4 items-baseline">
+                                                  <Check size={12} className="text-fitform-teal shrink-0" />
+                                                  <p className="text-sm font-bold text-white tracking-wide">"{tone.say}"</p>
+                                              </div>
+                                          </div>
+                                      </Reveal>
+                                  ))}
+                              </div>
+                          </div>
+
+                          <div className="text-center">
+                               <h3 className="font-mono text-xs text-gray-500 uppercase tracking-[0.3em] mb-12">Key Messages / Claims</h3>
+                               <div className="flex flex-wrap justify-center gap-6 max-w-5xl mx-auto">
+                                  {KEY_MESSAGES.map((msg, i) => (
+                                      <Reveal key={i} delay={i * 0.05}>
+                                          <span className="glass-panel px-8 py-4 rounded-full text-white font-display text-sm md:text-lg uppercase tracking-widest hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default block shadow-lg">
+                                              {msg}
+                                          </span>
+                                      </Reveal>
+                                  ))}
+                               </div>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+          )
+      }
+
+      const VisualSection = ({ id }) => {
+          return (
+              <section id={id} className="py-32 px-6 md:px-12 lg:px-24 bg-[#0F1218] relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px] pointer-events-none z-0" />
+                  <div className="absolute bottom-1/3 left-0 w-[600px] h-[600px] bg-fitform-teal/10 rounded-full blur-[100px] pointer-events-none z-0" />
+
+                  <div className="max-w-[1400px] mx-auto relative z-10">
+                      <div id="pdf-slide-visual-1" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <SectionHeader 
+                              number="3" 
+                              title="Branding" 
+                              subtitle="Especificaciones técnicas para asegurar la consistencia y la excelencia visual."
+                          />
+
+                          <div className="mb-48 relative">
+                               <div className="absolute left-1/2 -translate-x-1/2 -top-24 h-24 w-[1px] bg-gradient-to-b from-transparent to-fitform-teal/50"></div>
+                               
+                               <div className="text-center mb-20">
+                                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-fitform-teal/30 bg-fitform-teal/10 text-fitform-teal text-xs font-mono uppercase tracking-widest mb-6">
+                                      <Droplets size={12} /> Fitform Liquid System
+                                   </div>
+                                   <h3 className="font-display text-4xl md:text-6xl font-bold text-white uppercase tracking-tight mb-6">La Estética "Liquid Glass"</h3>
+                                   <p className="font-sans text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                                      Nuestra interfaz visual no es sólida; es permeable. Utilizamos capas de transparencia, desenfoque y luz para sugerir profundidad y modernidad.
+                                   </p>
+                               </div>
+
+                               <Reveal className="mb-32">
+                                  <div className="glass-panel-heavy p-12 md:p-24 rounded-[3rem] relative overflow-hidden border border-white/10">
+                                       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
+                                       
+                                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                                           <div className="relative flex flex-col items-center justify-center py-8">
+                                               <div className="w-full mb-8 text-left">
+                                                   <span className="font-mono text-xs text-fitform-teal uppercase tracking-widest block">Typographic Style: "Bloom"</span>
+                                               </div>
+                                               
+                                               <div className="relative z-10 w-full text-center">
+                                                   <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center font-display font-bold text-7xl md:text-9xl uppercase tracking-tighter leading-none text-white blur-[35px] opacity-40 select-none">
+                                                      Strong
+                                                   </h2>
+                                                   
+                                                   <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center font-display font-bold text-7xl md:text-9xl uppercase tracking-tighter leading-none text-white blur-[8px] opacity-30 select-none">
+                                                      Strong
+                                                   </h2>
+
+                                                   <h2 className="relative font-display font-bold text-7xl md:text-9xl uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/60 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                                                      Strong
+                                                   </h2>
+                                               </div>
+                                               
+                                               <div className="relative h-24 overflow-hidden w-full flex justify-center -mt-2 opacity-20 pointer-events-none" style={{ maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)' }}>
+                                                    <h2 className="font-display font-bold text-7xl md:text-9xl uppercase tracking-tighter leading-none text-white blur-[2px] transform scale-y-[-1] origin-top">
+                                                      Strong
+                                                   </h2>
+                                               </div>
+                                           </div>
+                                           
+                                           <div className="space-y-8">
+                                               <h4 className="text-2xl font-display font-bold text-white uppercase tracking-widest flex items-center gap-3">
+                                                  <Sparkles className="text-fitform-teal" /> Efecto "Bloom"
+                                               </h4>
+                                               <p className="text-gray-400 font-sans leading-relaxed">
+                                                   Para simular energía radiante, no usamos sombras planas (`drop-shadow`). Construimos el texto por capas (Stacking):
+                                               </p>
+                                               <ul className="space-y-4">
+                                                   <li className="flex gap-4 items-start">
+                                                       <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-1 text-[10px] font-mono text-white">1</div>
+                                                       <div>
+                                                           <strong className="block text-white text-sm uppercase tracking-wide">Núcleo Sólido</strong>
+                                                           <p className="text-gray-500 text-xs mt-1">Texto frontal con degradado sutil de arriba (100% blanco) a abajo (60% blanco).</p>
+                                                       </div>
+                                                   </li>
+                                                   <li className="flex gap-4 items-start">
+                                                       <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-1 text-[10px] font-mono text-white">2</div>
+                                                       <div>
+                                                           <strong className="block text-white text-sm uppercase tracking-wide">Halo Atmosférico</strong>
+                                                           <p className="text-gray-500 text-xs mt-1">Una copia exacta del texto detrás, con <code>blur-[35px]</code> y opacidad al 40%. Esto crea el efecto de que la luz "sangra" hacia el entorno.</p>
+                                                       </div>
+                                                   </li>
+                                                   <li className="flex gap-4 items-start">
+                                                       <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-1 text-[10px] font-mono text-white">3</div>
+                                                       <div>
+                                                           <strong className="block text-white text-sm uppercase tracking-wide">Definición</strong>
+                                                           <p className="text-gray-500 text-xs mt-1">Una capa intermedia con desenfoque ligero (8px) para suavizar los bordes duros sin perder legibilidad.</p>
+                                                       </div>
+                                                   </li>
+                                               </ul>
+                                           </div>
+                                       </div>
+                                  </div>
+                               </Reveal>
+                          </div>
+                      </div>
+
+                       <div id="pdf-slide-visual-2" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                           <Reveal delay={0.2} className="mb-32">
+                               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                   <div className="lg:col-span-5 flex flex-col justify-center">
+                                       <h4 className="text-3xl font-display font-bold text-white uppercase tracking-widest mb-6">
+                                           Construcción <br/><span className="text-fitform-teal">Del Cristal</span>
+                                       </h4>
+                                       <p className="text-gray-400 mb-8 font-sans leading-relaxed">
+                                           Nuestros contenedores no son cajas sólidas. Son superficies de vidrio esmerilado que flotan en el espacio. Para lograr este efecto, utilizamos una combinación precisa de 4 capas.
+                                       </p>
+                                       <ul className="space-y-4">
+                                           <li className="flex items-center gap-4 text-white font-mono text-sm uppercase tracking-widest">
+                                               <span className="w-6 h-6 rounded-full border border-fitform-teal flex items-center justify-center text-[10px] text-fitform-teal">1</span>
+                                               Backdrop Blur (16px - 24px)
+                                           </li>
+                                           <li className="flex items-center gap-4 text-white font-mono text-sm uppercase tracking-widest">
+                                               <span className="w-6 h-6 rounded-full border border-fitform-teal flex items-center justify-center text-[10px] text-fitform-teal">2</span>
+                                               Opacity Fill (White 3% - 10%)
+                                           </li>
+                                           <li className="flex items-center gap-4 text-white font-mono text-sm uppercase tracking-widest">
+                                               <span className="w-6 h-6 rounded-full border border-fitform-teal flex items-center justify-center text-[10px] text-fitform-teal">3</span>
+                                               Noise Texture Overlay (5%)
+                                           </li>
+                                           <li className="flex items-center gap-4 text-white font-mono text-sm uppercase tracking-widest">
+                                               <span className="w-6 h-6 rounded-full border border-fitform-teal flex items-center justify-center text-[10px] text-fitform-teal">4</span>
+                                               Inner Border (White 10%)
+                                           </li>
+                                       </ul>
+                                   </div>
+                                   
+                                   <div className="lg:col-span-7 h-[500px] relative perspective-1000 group">
+                                       <div className="absolute top-0 left-0 w-3/4 h-3/4 glass-panel border border-white/30 rounded-[2rem] z-40 transform transition-all duration-700 group-hover:-translate-y-12 group-hover:translate-x-12 flex items-center justify-center">
+                                           <span className="text-white font-mono text-xs uppercase tracking-widest bg-black/50 px-3 py-1 rounded">Layer 4: Border & Content</span>
+                                       </div>
+                                       
+                                       <div className="absolute top-4 left-4 w-3/4 h-3/4 border border-white/5 rounded-[2rem] z-30 transform transition-all duration-700 group-hover:-translate-y-4 group-hover:translate-x-4 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 flex items-center justify-center">
+                                            <span className="text-white font-mono text-xs uppercase tracking-widest bg-black/50 px-3 py-1 rounded">Layer 3: Noise Texture</span>
+                                       </div>
+
+                                       <div className="absolute top-8 left-8 w-3/4 h-3/4 bg-white/5 rounded-[2rem] z-20 transform transition-all duration-700 group-hover:translate-y-4 group-hover:-translate-x-4 flex items-center justify-center">
+                                            <span className="text-white font-mono text-xs uppercase tracking-widest bg-black/50 px-3 py-1 rounded">Layer 2: White Fill (5%)</span>
+                                       </div>
+
+                                       <div className="absolute top-12 left-12 w-3/4 h-3/4 bg-black/20 backdrop-blur-2xl rounded-[2rem] z-10 transform transition-all duration-700 group-hover:translate-y-12 group-hover:-translate-x-12 flex items-center justify-center">
+                                            <span className="text-white font-mono text-xs uppercase tracking-widest bg-black/50 px-3 py-1 rounded">Layer 1: Backdrop Blur</span>
+                                       </div>
+
+                                       <div className="absolute inset-0 bg-gradient-to-tr from-fitform-navy via-fitform-teal to-black rounded-[3rem] -z-10 opacity-30 blur-xl"></div>
+                                   </div>
+                               </div>
+                           </Reveal>
+
+                           <Reveal>
+                               <div className="glass-panel p-12 rounded-[3rem] text-center relative overflow-hidden">
+                                   <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-fitform-teal/30 rounded-full blur-[100px] animate-blob mix-blend-screen pointer-events-none"></div>
+                                   <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-screen pointer-events-none"></div>
+                                   
+                                   <div className="relative z-10 max-w-3xl mx-auto">
+                                      <Box className="mx-auto text-fitform-teal mb-6" size={32} />
+                                      <h4 className="text-3xl font-display font-bold text-white uppercase tracking-widest mb-6">Fondos Ambientales</h4>
+                                      <p className="text-gray-300 font-sans leading-relaxed mb-8">
+                                          Para evitar que la interfaz se sienta "plana" o "fría", utilizamos degradados orbitales desenfocados en el fondo (Deep Backgrounds). Estos orbes de luz (Teal, Navy, a veces sutil Purple) se mueven lentamente, imitando la respiración o el flujo de energía.
+                                      </p>
+                                      <div className="inline-block glass-panel px-6 py-3 rounded-lg border border-white/10">
+                                          <code className="text-[10px] md:text-xs text-fitform-teal font-mono">
+                                              filter: blur(120px); mix-blend-mode: screen; animation: float 10s infinite;
+                                          </code>
+                                      </div>
+                                   </div>
+                               </div>
+                           </Reveal>
+                      </div>
+
+                      <div id="pdf-slide-visual-3" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <div className="mb-40">
+                              <div className="flex items-center justify-between mb-12 border-b border-white/10 pb-6">
+                                   <h3 className="font-display text-2xl font-bold uppercase tracking-widest text-white flex items-center gap-4">
+                                      <MonitorPlay className="text-fitform-teal" /> Universo Visual & Motion
+                                  </h3>
+                              </div>
+
+                              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                   <div className="lg:col-span-8">
+                                       <Reveal className="group">
+                                           <div className="glass-panel-heavy p-2 rounded-[2.5rem] shadow-2xl">
+                                               <div className="bg-fitform-obsidian w-full aspect-video relative overflow-hidden rounded-[2rem]">
+                                                   <video 
+                                                      src={BRAND_VIDEO_URL} 
+                                                      className="w-full h-full object-cover" 
+                                                      autoPlay 
+                                                      loop 
+                                                      muted 
+                                                      playsInline
+                                                   />
+                                                   <div className="absolute top-6 left-6 glass-panel px-4 py-2 rounded-full text-white font-mono text-xs uppercase tracking-widest flex items-center gap-2">
+                                                       <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" /> REC
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </Reveal>
+                                   </div>
+                                   
+                                   <div className="lg:col-span-4 flex flex-col justify-between gap-6">
+                                       <div className="glass-panel p-8 rounded-[2rem]">
+                                           <h4 className="font-display font-bold uppercase tracking-widest text-white mb-4">Comportamiento</h4>
+                                           <p className="font-sans text-sm text-gray-400 leading-relaxed">
+                                               El movimiento de la marca debe reflejar el ritmo "Slow Twitch" del método Pilates: movimientos controlados, fuertes y constantes. Evitar cortes rápidos.
+                                           </p>
+                                       </div>
+                                       
+                                       <div className="grid grid-cols-2 gap-4">
+                                           {[{name: "Dark", bg: "bg-fitform-navy", imgClass: "invert brightness-0"}, {name: "Light", bg: "bg-fitform-bone", imgClass: ""}, {name: "Accent", bg: "bg-fitform-teal", imgClass: "invert brightness-0"}, {name: "Clean", bg: "bg-white", imgClass: ""}].map((variant, i) => (
+                                                <Reveal key={i} delay={0.1 * i} className={`glass-panel p-1 rounded-[2rem] relative group hover:scale-[1.02] transition-transform duration-500 cursor-pointer`}>
+                                                   <div className={`${variant.bg} w-full aspect-square rounded-[1.8rem] flex items-center justify-center`}>
+                                                      <span className="absolute top-4 left-4 text-[8px] opacity-50 uppercase tracking-widest font-mono mix-blend-difference text-white">{variant.name}</span>
+                                                      <img src={LOGO_URL} className={`w-12 ${variant.imgClass}`} alt="Logo" />
+                                                   </div>
+                                               </Reveal>
+                                           ))}
+                                       </div>
+                                   </div>
+                              </div>
+                          </div>
+
+                          <div className="mb-40">
+                              <div className="flex flex-col md:flex-row gap-12 items-start mb-20">
+                                   <div className="flex-1 md:sticky md:top-32">
+                                      <h3 className="font-display text-2xl font-bold uppercase tracking-widest text-white mb-8 flex items-center gap-4">
+                                          <Grid className="text-fitform-teal" /> Construcción & Retícula
+                                      </h3>
+                                      <p className="font-sans text-gray-400 mb-8 max-w-md leading-relaxed">
+                                          El logotipo debe respirar. El área de seguridad ("Clear Space") está definida por la altura de la letra 'F'. Ningún elemento gráfico debe invadir este espacio para garantizar la legibilidad e impacto.
+                                      </p>
+                                      <div className="grid grid-cols-2 gap-4">
+                                           <div className="glass-panel p-6 rounded-2xl">
+                                               <strong className="block text-gray-500 font-display uppercase text-xs mb-2">Impresión Mínima</strong>
+                                               <span className="font-mono text-2xl text-white">2.5cm</span>
+                                           </div>
+                                           <div className="glass-panel p-6 rounded-2xl">
+                                               <strong className="block text-gray-500 font-display uppercase text-xs mb-2">Digital Mínimo</strong>
+                                               <span className="font-mono text-2xl text-white">80px</span>
+                                           </div>
+                                      </div>
+                                   </div>
+                                   <Reveal width="full" className="flex-[1.5]">
+                                      <div className="glass-panel-heavy p-12 md:p-24 flex items-center justify-center relative rounded-[3rem] min-h-[500px]">
+                                           <div className="absolute inset-0 grid grid-cols-[repeat(20,1fr)] grid-rows-[repeat(12,1fr)] opacity-[0.05] pointer-events-none">
+                                              {[...Array(240)].map((_,i) => <div key={i} className="border-[0.5px] border-white"></div>)}
+                                           </div>
+                                           <div className="absolute top-8 left-8 flex gap-2 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                                               <Ruler size={14} /> <span>Scale 1:1 • Grid System</span>
+                                           </div>
+
+                                           <div className="absolute left-[10%] right-[10%] top-[20%] bottom-[20%] border border-fitform-teal opacity-50 rounded-lg">
+                                               <div className="absolute -top-6 left-0 text-[10px] font-bold text-fitform-teal uppercase tracking-widest">Clear Space (x)</div>
+                                           </div>
+                                           
+                                           <img src={LOGO_URL} alt="Fitform Primary Logo" className="w-full relative z-10 drop-shadow-2xl filter brightness-0 invert" />
+                                      </div>
+                                  </Reveal>
+                              </div>
+
+                              <h4 className="font-display font-bold uppercase tracking-widest text-white mb-8 text-sm border-b border-white/10 pb-4">Usos Correctos e Incorrectos</h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                                  <Reveal delay={0.1}>
+                                      <DoDontCard 
+                                          type="do" 
+                                          title="Sobre Blanco" 
+                                          visual={<div className="w-full h-full bg-white flex items-center justify-center"><img src={LOGO_URL} className="w-32" /></div>} 
+                                      />
+                                  </Reveal>
+                                  <Reveal delay={0.2}>
+                                       <DoDontCard 
+                                          type="do" 
+                                          title="Sobre Navy" 
+                                          visual={<div className="w-full h-full bg-fitform-navy flex items-center justify-center"><img src={LOGO_URL} className="w-32 invert brightness-0" /></div>} 
+                                      />
+                                  </Reveal>
+                                  <Reveal delay={0.3}>
+                                      <DoDontCard 
+                                          type="dont" 
+                                          title="Sin contraste" 
+                                          visual={<div className="w-full h-full bg-fitform-stone flex items-center justify-center"><img src={LOGO_URL} className="w-32 opacity-20" /></div>} 
+                                      />
+                                  </Reveal>
+                                  <Reveal delay={0.4}>
+                                      <DoDontCard 
+                                          type="dont" 
+                                          title="Deformado" 
+                                          visual={<div className="w-full h-full bg-white flex items-center justify-center"><img src={LOGO_URL} className="w-32 scale-x-50 scale-y-125" /></div>} 
+                                      />
+                                  </Reveal>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div id="pdf-slide-visual-4" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <div className="mb-40">
+                               <h3 className="font-display text-2xl font-bold uppercase tracking-widest text-white mb-16 flex items-center gap-4">
+                                  <PenTool className="text-fitform-teal" /> Sistema de Color Técnico
+                              </h3>
+                              <div className="space-y-16">
+                                  {COLOR_SYSTEM.map((group, idx) => (
+                                      <div key={idx}>
+                                          <div className="flex items-baseline gap-6 mb-8">
+                                              <h4 className="font-display text-4xl font-bold uppercase text-white">{group.title}</h4>
+                                              <span className="font-mono text-xs uppercase text-gray-500 tracking-widest border-l border-white/10 pl-6">{group.role}</span>
+                                          </div>
+                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                              {group.colors.map((color, cIdx) => (
+                                                  <Reveal key={cIdx} delay={cIdx * 0.1}>
+                                                      <ColorCard color={color} />
+                                                  </Reveal>
+                                              ))}
+                                          </div>
+                                      </div>
+                                  ))}
+                              </div>
+                          </div>
+                      </div>
+
+                      <div id="pdf-slide-visual-5" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <div>
+                               <h3 className="font-display text-2xl font-bold uppercase tracking-widest text-white mb-16 flex items-center gap-4">
+                                  <LayoutTemplate className="text-fitform-teal" /> Tipografía & Jerarquía
+                              </h3>
+                              
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+                                  <div className="group glass-panel-heavy p-10 md:p-14 relative overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(26,34,50,0.5)] rounded-[3rem]">
+                                      <div className="absolute -right-12 -top-12 text-[300px] font-display font-bold text-white opacity-[0.03] leading-none select-none group-hover:opacity-[0.06] transition-opacity">Aa</div>
+                                      <div className="relative z-10">
+                                          <span className="text-[10px] uppercase tracking-widest text-fitform-teal mb-4 block border-b border-white/10 pb-4">Display Typeface</span>
+                                          <h4 className="text-6xl font-display font-bold mb-10 text-white">Montserrat</h4>
+                                          
+                                          <div className="space-y-6 font-display text-white">
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-bold">Bold</span>
+                                                  <span className="text-xs opacity-50 font-mono">700</span>
+                                              </div>
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-medium">Medium</span>
+                                                  <span className="text-xs opacity-50 font-mono">500</span>
+                                              </div>
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-normal">Regular</span>
+                                                  <span className="text-xs opacity-50 font-mono">400</span>
+                                              </div>
+                                          </div>
+                                          
+                                          <p className="mt-12 text-xs opacity-50 leading-loose font-mono text-white">
+                                              ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>
+                                              0123456789 !@#$%^&*()
+                                          </p>
+                                      </div>
+                                  </div>
+
+                                  <div className="group glass-panel p-10 md:p-14 relative overflow-hidden transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,255,255,0.1)] rounded-[3rem]">
+                                       <div className="absolute -right-12 -top-12 text-[300px] font-sans font-bold text-white opacity-[0.03] leading-none select-none group-hover:opacity-[0.06] transition-opacity">Aa</div>
+                                       <div className="relative z-10">
+                                          <span className="text-[10px] uppercase tracking-widest text-gray-400 mb-4 block border-b border-white/10 pb-4">Body Typeface</span>
+                                          <h4 className="text-6xl font-sans mb-10 text-white">Inter</h4>
+                                          
+                                          <div className="space-y-6 font-sans text-white">
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-bold">Bold</span>
+                                                  <span className="text-xs opacity-50 font-mono">700</span>
+                                              </div>
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-normal">Regular</span>
+                                                  <span className="text-xs opacity-50 font-mono">400</span>
+                                              </div>
+                                              <div className="flex justify-between items-center">
+                                                  <span className="text-3xl font-light">Light</span>
+                                                  <span className="text-xs opacity-50 font-mono">300</span>
+                                              </div>
+                                          </div>
+
+                                           <p className="mt-12 text-xs opacity-50 leading-loose font-mono text-white">
+                                              abcdefghijklmnopqrstuvwxyz<br/>
+                                              0123456789 !@#$%^&*()
+                                          </p>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div className="glass-panel p-12 rounded-[3rem] overflow-hidden">
+                                  <span className="text-[10px] font-mono text-gray-400 uppercase mb-8 block pb-2">Hierachy Application</span>
+                                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                                      <div>
+                                          <h1 className="font-display font-bold text-6xl text-white uppercase leading-[0.9] mb-6 drop-shadow-lg">
+                                              Transforma<br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-fitform-teal to-white">Tu Cuerpo</span>
+                                          </h1>
+                                          <h2 className="font-display font-medium text-lg text-gray-300 mb-6 tracking-wide">
+                                              Un método diseñado para la resistencia y el control.
+                                          </h2>
+                                          <p className="font-sans text-gray-400 leading-relaxed max-w-md mb-8">
+                                              En Fitform, cada movimiento cuenta. Utilizamos la precisión de la técnica Pilates combinada con la intensidad del entrenamiento funcional para esculpir músculos largos y fuertes.
+                                          </p>
+                                          <button className="glass-panel px-8 py-3 text-white font-display font-bold text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-colors rounded-full border border-white/20">
+                                              Book Class
+                                          </button>
+                                      </div>
+                                      <div className="h-64 w-full relative overflow-hidden rounded-2xl group">
+                                          <div className="absolute inset-0 bg-fitform-teal/20 mix-blend-overlay z-10" />
+                                          <img 
+                                              src={IMPLEMENTATION_IMAGES[5]} 
+                                              alt="Fitform Class" 
+                                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.3] group-hover:grayscale-0"
+                                          />
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+          )
+      }
+
+      const StationerySection = ({ id }) => {
+          return (
+              <section id={id} className="py-32 px-6 md:px-12 lg:px-24 bg-[#0F1218] relative overflow-hidden">
+                   <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-fitform-teal/10 rounded-full blur-[150px] pointer-events-none z-0" />
+
+                  <div className="max-w-[1400px] mx-auto relative z-10">
+                      <div id="pdf-slide-apps" className="p-4 bg-[#0F1218]/50 backdrop-blur-sm rounded-3xl">
+                          <SectionHeader 
+                              number="4" 
+                              title="Aplicaciones" 
+                              subtitle="El universo de marca en el mundo real. Tangible, premium y consistente."
+                          />
+
+                          <div className="mb-20">
+                              <Reveal>
+                                  <p className="font-sans text-gray-400 max-w-2xl mb-12 text-lg leading-relaxed">
+                                      Desde la señalética del estudio hasta el merchandising, cada punto de contacto es una oportunidad para reforzar nuestra identidad "Strong & Sophisticated".
+                                  </p>
+                              </Reveal>
+                              
+                              <ImageGallery images={IMPLEMENTATION_IMAGES} />
+                          </div>
+                      </div>
+                  </div>
+              </section>
+          )
+      }
+
+      // --- APP ---
+
+      const App = () => {
+        const [activeSection, setActiveSection] = useState(NavigationSection.Cover);
+        const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+        const [scrolled, setScrolled] = useState(false);
+
+        useEffect(() => {
+          const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+            
+            const sections = NAV_ITEMS.map(item => item.id);
+            let currentSection = NavigationSection.Cover;
+
+            // Simple intersection check
+            const coverElement = document.getElementById(NavigationSection.Cover);
+            if (coverElement && coverElement.getBoundingClientRect().bottom > 0) {
+              currentSection = NavigationSection.Cover;
+            }
+
+            for (const section of sections) {
+              const element = document.getElementById(section);
+              if (element) {
+                const rect = element.getBoundingClientRect();
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= 0) {
+                   currentSection = section;
+                }
+              }
+            }
+            setActiveSection(currentSection);
+          };
+
+          window.addEventListener('scroll', handleScroll);
+          return () => window.removeEventListener('scroll', handleScroll);
+        }, []);
+
+        const scrollTo = (id) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+            setIsMobileMenuOpen(false);
+          }
+        };
+
+        return (
+          <div className="bg-[#0B0F15] text-white font-sans selection:bg-fitform-teal selection:text-white cursor-none min-h-screen relative overflow-x-hidden">
+            
+            <CustomCursor />
+            <NoiseOverlay />
+
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 flex justify-center ${scrolled ? 'pt-4' : 'pt-8'}`}>
+              <div className={`glass-panel px-8 py-4 rounded-full flex justify-between items-center transition-all duration-500 ${scrolled ? 'w-[90%] md:w-auto md:min-w-[600px] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]' : 'w-full max-w-[1400px] border-transparent bg-transparent shadow-none backdrop-filter-none'}`}>
+                <div 
+                  className={`font-display font-bold text-xl tracking-[0.2em] uppercase cursor-pointer transition-colors duration-300 text-white`} 
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                >
+                  {BRAND_NAME}
+                </div>
+
+                <div className="hidden lg:flex gap-8">
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollTo(item.id)}
+                      className={`text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-300 hover:tracking-[0.25em] relative py-2 px-3 rounded-full ${
+                        activeSection === item.id 
+                          ? 'text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                          : 'text-white/60 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      {item.label.split(". ")[1]}
+                    </button>
+                  ))}
+                </div>
+
+                <button className={`text-white lg:hidden z-50 relative p-2`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                  {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              </div>
+            </nav>
+
+            <AnimatePresence>
+              {isMobileMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                  animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                  exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                  transition={{ duration: 0.4 }}
+                  className="fixed inset-0 z-40 bg-fitform-obsidian/90 flex flex-col justify-center items-center gap-8 lg:hidden"
+                >
+                  {NAV_ITEMS.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollTo(item.id)}
+                      className="text-white text-3xl font-display font-bold uppercase tracking-widest hover:text-fitform-teal transition-colors"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <main>
+              <Hero />
+              <HeartSection id={NavigationSection.Heart} />
+              <VerbalSection id={NavigationSection.Verbal} />
+              <VisualSection id={NavigationSection.Visual} />
+              <StationerySection id={NavigationSection.Applications} />
+            </main>
+
+            <footer className="bg-[#05070a] text-gray-600 py-24 px-6 text-center relative overflow-hidden">
+               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[100px] bg-fitform-teal/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="max-w-7xl mx-auto flex flex-col items-center gap-8 relative z-10">
+                  <h2 className="font-display text-4xl font-bold tracking-[0.2em] uppercase text-white/20 hover:text-white/80 transition-colors duration-500 cursor-default">{BRAND_NAME}</h2>
+                  <div className="h-[1px] w-24 bg-white/10"></div>
+                  <p className="font-sans text-xs tracking-widest uppercase">Digital Brand Guidelines • 2026</p>
+                  <p className="font-sans text-[10px] uppercase tracking-widest opacity-50">&copy; Fitform Strong Pilates. All rights reserved.</p>
+              </div>
+            </footer>
+
+            <AnimatePresence>
+              {scrolled && (
+                  <motion.button
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      className="fixed bottom-8 right-8 glass-panel p-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] z-30 hover:bg-white/20 transition-colors text-white"
+                  >
+                      <ArrowUp size={20} />
+                  </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      };
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
